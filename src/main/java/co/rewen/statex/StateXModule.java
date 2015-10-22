@@ -10,8 +10,11 @@ package co.rewen.statex;
  */
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
@@ -27,6 +30,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SetBuilder;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import static co.rewen.statex.StateXDatabaseSupplier.KEY_COLUMN;
@@ -183,25 +187,29 @@ public final class StateXModule
                 String sql = "INSERT OR REPLACE INTO " + TABLE_STATE + " VALUES (?, ?);";
                 SQLiteStatement statement = mStateXDatabaseSupplier.get().compileStatement(sql);
                 WritableMap error = null;
+                ArrayList<String> keys = new ArrayList<>();
                 try {
                     mStateXDatabaseSupplier.get().beginTransaction();
                     for (int idx = 0; idx < keyValueArray.size(); idx++) {
                         if (keyValueArray.getArray(idx).size() != 2) {
                             error = AsyncStorageErrorUtil.getInvalidValueError(null);
-                            return;
+                            break;
                         }
-                        if (keyValueArray.getArray(idx).getString(0) == null) {
+                        String key = keyValueArray.getArray(idx).getString(0);
+                        if (key == null) {
                             error = AsyncStorageErrorUtil.getInvalidKeyError(null);
-                            return;
+                            break;
                         }
-                        if (keyValueArray.getArray(idx).getString(1) == null) {
+                        String value = keyValueArray.getArray(idx).getString(1);
+                        if (value == null) {
                             error = AsyncStorageErrorUtil.getInvalidValueError(null);
-                            return;
+                            break;
                         }
 
+                        keys.add(key);
                         statement.clearBindings();
-                        statement.bindString(1, keyValueArray.getArray(idx).getString(0));
-                        statement.bindString(2, keyValueArray.getArray(idx).getString(1));
+                        statement.bindString(1, key);
+                        statement.bindString(2, value);
                         statement.execute();
                     }
                     mStateXDatabaseSupplier.get().setTransactionSuccessful();
@@ -222,6 +230,7 @@ public final class StateXModule
                     callback.invoke(error);
                 } else {
                     callback.invoke();
+                    notifyStateChanged(keys);
                 }
             }
         }.execute();
@@ -273,6 +282,7 @@ public final class StateXModule
                     callback.invoke(error);
                 } else {
                     callback.invoke();
+                    notifyStateChanged(StateX.toStringArray(keys));
                 }
             }
         }.execute();
@@ -292,6 +302,7 @@ public final class StateXModule
                     return;
                 }
                 WritableMap error = null;
+                ArrayList<String> keys = new ArrayList<>();
                 try {
                     mStateXDatabaseSupplier.get().beginTransaction();
                     for (int idx = 0; idx < keyValueArray.size(); idx++) {
@@ -300,9 +311,12 @@ public final class StateXModule
                             return;
                         }
 
-                        if (keyValueArray.getArray(idx).getString(0) == null) {
+                        String key = keyValueArray.getArray(idx).getString(0);
+                        if (key == null) {
                             error = AsyncStorageErrorUtil.getInvalidKeyError(null);
                             return;
+                        } else {
+                            keys.add(key);
                         }
 
                         if (keyValueArray.getArray(idx).getString(1) == null) {
@@ -312,7 +326,7 @@ public final class StateXModule
 
                         if (!AsyncLocalStorageUtil.mergeImpl(
                                 mStateXDatabaseSupplier.get(),
-                                keyValueArray.getArray(idx).getString(0),
+                                key,
                                 keyValueArray.getArray(idx).getString(1))) {
                             error = AsyncStorageErrorUtil.getDBError(null);
                             return;
@@ -336,6 +350,7 @@ public final class StateXModule
                     callback.invoke(error);
                 } else {
                     callback.invoke();
+                    notifyStateChanged(keys);
                 }
             }
         }.execute();
@@ -403,6 +418,19 @@ public final class StateXModule
      */
     private boolean ensureDatabase() {
         return !mShuttingDown && mStateXDatabaseSupplier.ensureDatabase();
+    }
+
+    private void notifyStateChanged(ArrayList<String> keys) {
+        /*Intent intent = new Intent(StateX.ACTION_STATE_CHANGED);
+        intent.putStringArrayListExtra(StateX.EXTRA_KEYS, keys);*/
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(
+                getReactApplicationContext());
+        for (String key : keys) {
+            Intent intent = new Intent(StateX.ACTION_STATE_CHANGED);
+            Uri uri = StateX.uriForKey(key);
+            intent.setData(uri);
+            broadcastManager.sendBroadcast(intent);
+        }
     }
 }
 

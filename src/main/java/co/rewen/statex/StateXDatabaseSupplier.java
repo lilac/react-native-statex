@@ -13,6 +13,7 @@ package co.rewen.statex;
 import javax.annotation.Nullable;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -109,5 +110,17 @@ public class StateXDatabaseSupplier extends SQLiteOpenHelper {
             mDb = null;
         }
         return mContext.deleteDatabase(DATABASE_NAME);
+    }
+
+    public String getState(String key) {
+        String columns[] = {VALUE_COLUMN};
+        String args[] = {key};
+        Cursor cursor = getReadableDatabase().query(TABLE_STATE, columns, KEY_COLUMN + " = ?", args,
+                null, null, null);
+        if(cursor.moveToFirst()) {
+            return cursor.getString(0);
+        }
+        cursor.close();
+        return null;
     }
 }
