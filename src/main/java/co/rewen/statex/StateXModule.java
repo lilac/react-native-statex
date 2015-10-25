@@ -1,6 +1,7 @@
 package co.rewen.statex;
 
 /**
+ * Copyright (c) 2015-present, Junjun Deng
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  * <p>
@@ -433,4 +434,3 @@ public final class StateXModule
         }
     }
 }
-
