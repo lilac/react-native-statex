@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "417752ED36F44A2E8DF7B73EEB5EFDB8D8676B5A",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "734B8E27494848A8777DE1792875A95B4CE976C6" : 0,
+    "417752ED36F44A2E8DF7B73EEB5EFDB8D8676B5A" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "537FA086-EF8B-4529-8F1C-D8A2ACB5A581",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "734B8E27494848A8777DE1792875A95B4CE976C6" : "",
+    "417752ED36F44A2E8DF7B73EEB5EFDB8D8676B5A" : "react-native-statex\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "statex",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ios\/statex.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/lilac\/react-native-statex.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "417752ED36F44A2E8DF7B73EEB5EFDB8D8676B5A"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:lilac\/statex.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "734B8E27494848A8777DE1792875A95B4CE976C6"
+    }
+  ]
+}
