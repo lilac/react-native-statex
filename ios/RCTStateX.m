@@ -225,8 +225,14 @@ RCT_EXPORT_MODULE()
     }
     RCTHasCreatedStorageDirectory = YES;
   }
+  return [self _setup];
+}
+
+- (NSDictionary *)_setup
+{
+  NSDictionary *errorOut = nil;
   if (!_haveSetup) {
-    NSDictionary *errorOut;
+    NSError *error = nil;
     NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), nil, &errorOut);
     _manifest = serialized ? RCTJSONParseMutable(serialized, &error) : [NSMutableDictionary new];
     if (error) {
@@ -236,7 +242,7 @@ RCT_EXPORT_MODULE()
     [_manifest retain];
     _haveSetup = YES;
   }
-  return nil;
+  return errorOut;
 }
 
 - (id)_writeManifest:(NSMutableArray **)errors
@@ -268,6 +274,7 @@ RCT_EXPORT_MODULE()
 
 - (NSString *)get:(NSString *)key errorOut:(NSDictionary **)errorOut
 {
+  *errorOut = [self _setup];
   return [self _getValueForKey:key errorOut:errorOut];
 }
 
