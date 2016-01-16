@@ -47,7 +47,7 @@ static void RCTAppendError(id error, NSMutableArray **errors)
 static id RCTReadFile(NSString *filePath, NSString *key, NSDictionary **errorOut)
 {
   if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-    NSError *error;
+    NSError *error = nil;
     NSStringEncoding encoding;
     NSString *entryString = [NSString stringWithContentsOfFile:filePath usedEncoding:&encoding error:&error];
     if (error) {
@@ -68,6 +68,7 @@ static NSString *RCTGetStorageDirectory()
   dispatch_once(&onceToken, ^{
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
+    [storageDirectory retain];
   });
   return storageDirectory;
 }
@@ -78,6 +79,7 @@ static NSString *RCTGetManifestFilePath()
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
+    [manifestFilePath retain];
   });
   return manifestFilePath;
 }
@@ -130,7 +132,7 @@ static NSCache *RCTGetCache()
   dispatch_once(&onceToken, ^{
     cache = [NSCache new];
     cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
-
+    
     // Clear cache in the event of a memory warning
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
       [cache removeAllObjects];
@@ -150,12 +152,14 @@ static NSError *RCTDeleteStorageDirectory()
 
 static void notifyChange(NSString *key)
 {
+  dispatch_async(dispatch_get_main_queue(),^{
     [[NSNotificationCenter defaultCenter] postNotificationName:key object:nil];
+  });
 }
 
 #pragma mark - RCTAsyncLocalStorage
 
-@implementation RCTStatex
+@implementation StateX
 {
   BOOL _haveSetup;
   // The manifest is a dictionary of all keys with small values inlined.  Null values indicate values that are stored
@@ -209,7 +213,7 @@ RCT_EXPORT_MODULE()
 - (id)_ensureSetup
 {
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
-
+  
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {
     [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
@@ -229,6 +233,7 @@ RCT_EXPORT_MODULE()
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
       _manifest = [NSMutableDictionary new];
     }
+    [_manifest retain];
     _haveSetup = YES;
   }
   return nil;
@@ -236,10 +241,10 @@ RCT_EXPORT_MODULE()
 
 - (id)_writeManifest:(NSMutableArray **)errors
 {
-  NSError *error;
+  NSError *error = nil;
   NSString *serialized = RCTJSONStringify(_manifest, &error);
   [serialized writeToFile:RCTGetManifestFilePath() atomically:YES encoding:NSUTF8StringEncoding error:&error];
-  id errorOut;
+  id errorOut = nil;
   if (error) {
     errorOut = RCTMakeError(@"Failed to write manifest file.", error, nil);
     RCTAppendError(errorOut, errors);
@@ -263,7 +268,7 @@ RCT_EXPORT_MODULE()
 
 - (NSString *)get:(NSString *)key errorOut:(NSDictionary **)errorOut
 {
-    return [self _getValueForKey:key errorOut:errorOut];
+  return [self _getValueForKey:key errorOut:errorOut];
 }
 
 - (id)_writeEntry:(NSArray *)entry
@@ -281,7 +286,7 @@ RCT_EXPORT_MODULE()
   }
   NSString *value = entry[1];
   NSString *filePath = [self _filePathForKey:key];
-  NSError *error;
+  NSError *error = nil;
   if (value.length <= RCTInlineValueThreshold) {
     if (_manifest[key] && _manifest[key] != (id)kCFNull) {
       // If the value already existed but wasn't inlined, remove the old file.
@@ -312,16 +317,16 @@ RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
     RCTLogError(@"Called getItem without a callback.");
     return;
   }
-
+  
   id errorOut = [self _ensureSetup];
   if (errorOut) {
     callback(@[@[errorOut], (id)kCFNull]);
     return;
   }
-  NSMutableArray *errors;
+  NSMutableArray *errors = nil;
   NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:keys.count];
   for (NSString *key in keys) {
-    id keyError;
+    id keyError = nil;
     id value = [self _getValueForKey:key errorOut:&keyError];
     [result addObject:@[key, RCTNullIfNil(value)]];
     RCTAppendError(keyError, &errors);
@@ -337,7 +342,7 @@ RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
     callback(@[@[errorOut]]);
     return;
   }
-  NSMutableArray *errors;
+  NSMutableArray *errors = nil;
   for (NSArray *entry in kvPairs) {
     id keyError = [self _writeEntry:entry];
     RCTAppendError(keyError, &errors);

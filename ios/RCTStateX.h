@@ -21,7 +21,7 @@
  *
  * Keys and values must always be strings or an error is returned.
  */
-@interface RCTStatex : NSObject <RCTBridgeModule,RCTInvalidating>
+@interface StateX : NSObject <RCTBridgeModule,RCTInvalidating>
 
 @property (nonatomic, assign) BOOL clearOnInvalidate;
 
