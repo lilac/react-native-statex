@@ -1,6 +1,6 @@
 {
   "name": "react-native-statex",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Application States Storage",
   "main": "index.js",
   "scripts": {
