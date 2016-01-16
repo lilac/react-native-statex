@@ -36,7 +36,7 @@
 		9FB067131C1F969B00862F0F /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		9FFE706C1C1D8683002A9C53 /* libstatex.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libstatex.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FFE707B1C1D86C8002A9C53 /* RCTStateX.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.h; path = RCTStateX.h; sourceTree = "<group>"; tabWidth = 2; };
-		9FFE707C1C1D86C8002A9C53 /* RCTStateX.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTStateX.m; sourceTree = "<group>"; tabWidth = 2; };
+		9FFE707C1C1D86C8002A9C53 /* RCTStateX.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTStateX.m; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,9 @@
 				9FFE707C1C1D86C8002A9C53 /* RCTStateX.m */,
 				9FFE706D1C1D8683002A9C53 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		9FFE706D1C1D8683002A9C53 /* Products */ = {
 			isa = PBXGroup;
