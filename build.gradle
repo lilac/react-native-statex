@@ -12,9 +12,7 @@ android {
     }
 }
 
-def RN_VERSION = '0.17.0'
-
 dependencies {
-    compile "com.facebook.react:react-native:${RN_VERSION}"
+    compile rootProject.ext.libraries['react-native']
 }
 
