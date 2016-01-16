@@ -9,6 +9,6 @@
   "author": "Junjun Deng",
   "license": "MIT",
   "dependencies": {
-    "react-native": "^0.14.2"
+    "react-native": "^0.17.0"
   }
 }
