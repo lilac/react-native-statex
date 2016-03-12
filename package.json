@@ -9,6 +9,6 @@
   "author": "Junjun Deng",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": "^0.17.0"
+    "react-native": ">= 0.17.0"
   }
 }
